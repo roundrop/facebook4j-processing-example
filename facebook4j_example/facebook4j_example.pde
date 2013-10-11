@@ -36,6 +36,7 @@ void draw() {
     text(me.getId(), 10, 30);
     text(me.getName(), 10, 100);
   } catch(FacebookException e) {
-    println(e.getStatusCode());
+    println(e);
+    exit();
   }
 }
