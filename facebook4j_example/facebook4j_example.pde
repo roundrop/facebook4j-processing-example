@@ -116,7 +116,7 @@ void mouseClicked() {
       accessToken = gat.getAccessToken();
       facebook.setOAuthAccessToken(accessToken);
     } catch(FacebookException e) {
-      println(e);
+      e.printStackTrace();
     }
     textSize(12);
     text("Your Access token:",
