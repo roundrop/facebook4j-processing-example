@@ -7,4 +7,5 @@ Java 6+ required.
 ![screenshot](https://raw.githubusercontent.com/roundrop/facebook4j-processing-example/master/screenshot.jpg)
 
 Facebook App Setting:
-![fb_app_setting][https://raw.githubusercontent.com/roundrop/facebook4j-processing-example/master/facebook_app_setting.png)
+![fb_app_setting](https://raw.githubusercontent.com/roundrop/facebook4j-processing-example/master/facebook_app_setting.jpg)
+
