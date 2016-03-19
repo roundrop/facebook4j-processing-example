@@ -14,44 +14,34 @@ Facebook facebook;
 
 boolean authCompleted = false;
 boolean gotAccessToken = false;
+DeviceCode deviceCode = null;
 
 void setup() {
   size(400, 610);
   frameRate(100);
 
   background(255);
-  fill(#000000, 128);
   noStroke();
 
-  // Authentication
+  /* Facebook Login */
+  fill(#000000, 18);
   rect(10, 10, 380, 190, 7);
+  fill(#000000, 100);
   textSize(20);
-  text("Authentication", 40, 40);
-  textSize(16);
-  text("Start", 290, 40);
-  rect(270, 23, 80, 25, 7);
+  text("Facebook Login", 40, 40);
+  PImage img = loadImage("login_with_facebook.png");
+  image(img, 110, 50);
 
-  // Getting access token
-  rect(10, 210, 380, 190, 7);
+  /* API Examples */
+  fill(#000000, 18);
+  rect(10, 210, 380, 390, 7);
+  fill(#000000, 100);
   textSize(20);
-  text("Getting access token", 40, 240);
-  textSize(12);
-  text("Email: ", 50, 275);
-  text(email, 120, 275);
-  textSize(12);
-  text("Password: ", 50, 305);
-  text("********", 120, 305);
+  text("API Examples", 40, 240);
   textSize(16);
-  text("Get", 295, 307);
-  rect(270, 290, 80, 25, 7);
-
-  // API Examples
-  rect(10, 410, 380, 190, 7);
-  textSize(20);
-  text("API Examples", 40, 440);
-  textSize(16);
-  text("Run", 295, 440);
-  rect(270, 423, 80, 25, 7);
+  text("Run", 295, 240);
+  fill(#000000, 50);
+  rect(270, 223, 80, 25, 7);
 
   // prepare Facebook4J
   ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -79,13 +69,13 @@ void changeCursor() {
 }
 
 int mouseOverButton() {
-  if ((270 <= mouseX && mouseX <= 350) && (23 <= mouseY && mouseY <= 48)) {
+  if ((110 <= mouseX && mouseX <= 301) && (50 <= mouseY && mouseY <= 90)) {
     return 1;
   } else
-  if ((270 <= mouseX && mouseX <= 350) && (290 <= mouseY && mouseY <= 315)) {
+  if (authCompleted && (130 <= mouseX && mouseX <= 370) && (105 <= mouseY && mouseY <= 125)) {
     return 2;
   } else
-  if ((270 <= mouseX && mouseX <= 350) && (423 <= mouseY && mouseY <= 448)) {
+  if (authCompleted && (270 <= mouseX && mouseX <= 350) && (223 <= mouseY && mouseY <= 248)) {
     return 3;
   }
   return 0;
@@ -94,54 +84,61 @@ int mouseOverButton() {
 void mouseClicked() {
   switch (mouseOverButton()) {
 
-  // Authentication
+  /* Facebook Login */
   case 1:
     if (authCompleted) break;
-    String callbackURL = "https://www.facebook.com/connect/login_success.html";
-    link(facebook.getOAuthAuthorizationURL(callbackURL) + "&response_type=token", "_new");
-    textSize(12);
-    text("Authentication succeeded if the following displayed\n in your web browser:",
-         50, 70);
-    PImage img = loadImage("auth.png");
-    image(img, 20, 100);
+    try {
+      deviceCode = facebook.getOAuthDeviceCode();
+    } catch (FacebookException e) {
+    }
     authCompleted = true;
+
+    fill(#000000, 100);
+    textSize(16);
+    text("Next, visit ", 40, 120);
+    fill(#063965, 200);
+    textSize(14);
+    text(deviceCode.getVerificationUri(), 130, 120);
+    fill(#000000, 100);
+    text("and enter this code: ", 130, 150);
+    fill(#000000, 200);
+    textSize(24);
+    text(deviceCode.getUserCode(), 140, 170);
     break;
 
-  // Getting access token
+  /* Visit facebook.com/device */
   case 2:
-    if (gotAccessToken) break;
-    GetAccessToken gat = new GetAccessToken();
-    AccessToken accessToken = null;
-    try {
-      accessToken = gat.getAccessToken();
-      facebook.setOAuthAccessToken(accessToken);
-    } catch(FacebookException e) {
-      e.printStackTrace();
-    }
-    textSize(12);
-    text("Your Access token:",
-         50, 340);
-    text(accessToken.getToken().substring(0, 32) + "...", 60, 360);
-    println("Access token: " + accessToken.getToken());
-    gotAccessToken = true;
+    link(deviceCode.getVerificationUri());
     break;
 
   // API Examples
   case 3:
+    setToken();
+
     getMe();
     break;
   }
 }
 
+void setToken() {
+  try {
+    facebook.getOAuthDeviceToken(deviceCode);
+  } catch(Exception e) {
+    println(e);
+    exit();
+  }
+}
+
 void getMe() {
+  fill(#000000, 90);
   textSize(16);
-  text("Your Basic Info:", 50, 480);
+  text("Your Basic Info:", 50, 280);
   try {
     User me = facebook.getMe();
-    text(me.getId(), 60, 500);
-    text(me.getName(), 60, 520);
-    text(me.getGender(), 60, 540);
-    text(me.getEmail(), 60, 560);
+    text(me.getId(), 60, 300);
+    text(me.getName(), 60, 320);
+    text(me.getGender(), 60, 340);
+    text(me.getEmail(), 60, 360);
   } catch(FacebookException e) {
     println(e);
     exit();
